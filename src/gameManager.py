@@ -4,18 +4,19 @@ import random
 from .GameModule import objectModule
 
 class gManager:
+    #define size variable
     WEIGHT = 1200
     HEIGHT = 600
     screen = pygame.Surface
-    
     bg = pygame.Surface
     
+    #define clock variable
     clock = pygame.time.Clock
-    
+    #define event variable
     EventFreqence = 3000
     MY_EVENT1 = 0
     MY_EVENT2 = 0
-    
+    #define object variable
     allsprite = pygame.sprite.Group
     player = objectModule.PlayerModule
     key = objectModule.KeyModule
@@ -35,9 +36,9 @@ class gManager:
         self.MY_EVENT1 = pygame.USEREVENT + 1
         self.MY_EVENT2 = pygame.USEREVENT + 2
         self.MY_EVENT3 = pygame.USEREVENT + 3
-        pygame.time.set_timer(self.MY_EVENT1, self.EventFreqence)
-        pygame.time.set_timer(self.MY_EVENT2, self.EventFreqence*2)
-        pygame.time.set_timer(self.MY_EVENT3, self.EventFreqence*3)
+        pygame.time.set_timer(self.MY_EVENT1, self.EventFreqence)       #set timer for events
+        pygame.time.set_timer(self.MY_EVENT2, self.EventFreqence*2)     #
+        pygame.time.set_timer(self.MY_EVENT3, self.EventFreqence*3)     #
         
         self.clock = pygame.time.Clock()
         self.allsprite = pygame.sprite.Group()
@@ -67,7 +68,7 @@ class gManager:
         return key_x, key_y
 
     #create random bullet
-    def create_bullet(self, speed, color):
+    def create_bullet(self, speed, color):      #create bullets
         for i in range(0,5):
             x_pos = 0 if(random.randint(0,1) == 0) else self.WEIGHT
             y_pos = random.randint(50, self.HEIGHT-50)
@@ -84,7 +85,7 @@ class gManager:
             self.bullet_list.append(bullet)
             self.allsprite.add(bullet)
     
-    def create_bigbullet(self, speed, color):
+    def create_bigbullet(self, speed, color):   #create larger bullets
         for i in range(0,5):
             x_pos = 0 if(random.randint(0,1) == 0) else self.WEIGHT
             y_pos = random.randint(50, self.HEIGHT-50)
@@ -96,6 +97,7 @@ class gManager:
         
             
     def play(self):
+        #main game loop
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -108,6 +110,7 @@ class gManager:
                 elif event.type == self.MY_EVENT3:
                     self.create_bigbullet(5, (255, 0, 0))
 
+            #press W A S D to move, this allow player to move diagonally
             keys = pygame.key.get_pressed()
             if keys[pygame.K_w] and keys[pygame.K_a]:
                 self.player.move(-1, -1)
@@ -126,6 +129,7 @@ class gManager:
             elif keys[pygame.K_d]:
                 self.player.move(1, 0)
             
+            #interact with key, if player collide with key, key will be removed and a new key will be created
             if self.player.rect.colliderect(self.key.rect):
                 self.key.kill()
                 self.Score = self.Score+1
@@ -133,7 +137,7 @@ class gManager:
                 self.key = objectModule.KeyModule(next_pos[0], next_pos[1])
                 self.allsprite.add(self.key)
                 
-            
+            #lock player in the gray area
             if self.player.rect.center[0] < 50:
                 self.player.move_to(51, self.player.rect.center[1])
             elif self.player.rect.center[0] > 1150:
@@ -143,41 +147,25 @@ class gManager:
             elif self.player.rect.center[1] > 550:
                 self.player.move_to(self.player.rect.center[0], 549)
             
-            
+            #check if player collide with bullet
             for bullet in self.bullet_list:
+                #if collide, game will end
                 if bullet.rect.colliderect(self.player.rect):
                     self.player.kill()
                     self.bullet_list.clear()
                     pygame.quit()
                     return self.Score
-
+                #if bullet is out of screen, it will be removed
                 if(bullet.rect.center[0] < 0 or bullet.rect.center[0] > self.screen.get_size()[0]):
                     bullet.kill()
                     self.bullet_list.remove(bullet)
                     continue
                 bullet.update()
                 
-            for lazer in self.lazer_list:
-                if lazer.rect.colliderect(self.player.rect):
-                    self.player.kill()
-                    self.lazer_list.clear()
-                    pygame.quit()
-                    return self.Score
-                
-                if(lazer.rect.center[0] < 0 or lazer.rect.center[0] > self.screen.get_size()[0]):
-                    lazer.kill()
-                    self.lazer_list.remove(lazer)
-                    continue
-                lazer.update()
-                
-            self.screen.blit(self.bg, (0,0))
-            self.allsprite.draw(self.screen)
-            self.clock.tick(60)
-            pygame.display.update()
-            
-    def end(self):
-        self.bullet_list.clear()
-        pygame.quit()
+            self.screen.blit(self.bg, (0,0))    #merge the main background on the screen
+            self.allsprite.draw(self.screen)    #merge all sprites on the screen
+            self.clock.tick(60)                 #set fps
+            pygame.display.update()             #update the screen
 
 
 

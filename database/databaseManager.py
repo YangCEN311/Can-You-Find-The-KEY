@@ -3,6 +3,7 @@ import sqlite3
 class dbManager:
     path = ".\database\example.db"
     def __init__(self):
+        #create database
         conn = sqlite3.connect(self.path)
         cursor = conn.cursor()
         
@@ -17,9 +18,11 @@ class dbManager:
         conn.close()
         
     def insert(self, username, score):
+        #insert data
         conn = sqlite3.connect(self.path)
         cursor = conn.cursor()
         
+        #delete the lowest score, if the data count is over 50
         cursor.execute("SELECT COUNT(*) FROM scoreboard")
         data_count = cursor.fetchone()[0]
         if(data_count >= 50):
@@ -30,6 +33,7 @@ class dbManager:
         conn.close()
 
     def search(self):
+        #search data, and sort it, then return it
         conn = sqlite3.connect(self.path)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM scoreboard ORDER BY score DESC")

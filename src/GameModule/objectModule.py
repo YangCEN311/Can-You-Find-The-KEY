@@ -71,7 +71,7 @@ class BulletModule(pygame.sprite.Sprite):
         self.speed = speed
         self.direction = direction
         
-        #Draw the tower
+        #Draw the bullet
         self.image = pygame.Surface([10, 10])
         self.image.fill((255, 255, 254))
         self.image.set_colorkey((255, 255, 254))
